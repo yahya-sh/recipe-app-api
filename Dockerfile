@@ -18,11 +18,15 @@ ARG DEV=false
 
 RUN python -m venv /py && \
     /py/bin/pip install --no-cache-dir --upgrade pip && \
+    apk add --no-cache --update postgresql-client && \
+    apk add --no-cache --update --virtual .tmp-build-deps \
+        build-base postgresql-dev musl-dev && \
     /py/bin/pip install --no-cache-dir -r /tmp/requirements.txt && \
     if [ "$DEV" = "true" ]; \
         then /py/bin/pip install --no-cache-dir -r /tmp/requirements.dev.txt; \
     fi && \
     rm -rf /tmp && \
+    apk del .tmp-build-deps && \
     adduser \
         --disabled-password \
         --no-create-home \
