@@ -17,7 +17,8 @@ services:
       - DB_USER=postgres
       - DB_PASSWORD=changeme
     depends_on:
-      - db
+      db:
+        condition: service_healthy
   
   db:
     image: postgres:17-alpine3.22
@@ -27,8 +28,11 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: changeme
       POSTGRES_DB: recipe_app_db_dev
-
-
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U my_user -d my_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
 volumes:
   dev-db-data:
